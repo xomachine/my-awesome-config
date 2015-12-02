@@ -41,7 +41,7 @@ end
 beautiful.init("/usr/share/awesome/themes/default/theme.lua")
 
 -- This is used later as the default terminal and editor to run.
-terminal = "xterm"
+terminal = "termite"
 editor = os.getenv("EDITOR") or "nano"
 editor_cmd = terminal .. " -e " .. editor
 
@@ -87,13 +87,18 @@ for s = 1, screen.count() do
 end
 -- }}}
 
--- Launch menu
+-- Launcher menu
 local launch_menu = require("menu")
 mylauncher = launch_menu.create_launcher()
 
 -- Autostart
 local autostarter = require("autostart")
 autostarter.do_autostart()
+
+-- Keyboard switcher
+kbdmod = require("kbd_switch")
+kbdwidget = kbdmod.new()
+-- globalkeys = kbdwidget.bindkey(globalkeys, "Control_L", "Shift_L" )
 
 -- Menubar configuration
 menubar.utils.terminal = terminal -- Set the terminal for applications that require it
@@ -182,6 +187,8 @@ for s = 1, screen.count() do
     -- Widgets that are aligned to the right
     local right_layout = wibox.layout.fixed.horizontal()
     if s == 1 then right_layout:add(wibox.widget.systray()) end
+    -- Add widget to your layout
+    right_layout:add(kbdwidget.widget)
     right_layout:add(mytextclock)
     right_layout:add(mylayoutbox[s])
 

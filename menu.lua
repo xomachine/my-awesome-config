@@ -4,7 +4,7 @@ local beautiful = require("beautiful")
 -- local menugen = require("menubar.menu_gen")
 
 function create_launcher()
-  local terminal = "lxterminal"
+  local terminal = "termite"
   myawesomemenu = {
      { "manual", terminal .. " -e man awesome" },
      { "edit config", "leafpad " .. awesome.conffile },
