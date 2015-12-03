@@ -97,8 +97,9 @@ autostarter.do_autostart()
 
 -- Keyboard switcher
 kbdmod = require("kbd_switch")
-kbdwidget = kbdmod.new()
--- globalkeys = kbdwidget.bindkey(globalkeys, "Control_L", "Shift_L" )
+kbdwidget = kbdmod.new("Shift", "Control_L")
+
+
 
 -- Menubar configuration
 menubar.utils.terminal = terminal -- Set the terminal for applications that require it
@@ -211,7 +212,7 @@ root.buttons(awful.util.table.join(
 -- }}}
 
 -- {{{ Key bindings
-globalkeys = awful.util.table.join(
+globalkeys = awful.util.table.join(root.keys(),
     awful.key({ modkey,           }, "Left",   awful.tag.viewprev       ),
     awful.key({ modkey,           }, "Right",  awful.tag.viewnext       ),
     awful.key({ modkey,           }, "Escape", awful.tag.history.restore),
