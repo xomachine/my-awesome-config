@@ -6,21 +6,26 @@ local beautiful = require("beautiful")
 function create_launcher()
   --local terminal = "termite"
   myawesomemenu = {
-     { "manual", terminal .. " -e man awesome" },
-     { "edit config", "aporia " .. awesome.conffile },
-     { "restart", awesome.restart },
-     { "quit", awesome.quit }
+     { "Помощь", terminal .. " -e man awesome" },
+     { "Редактировать конфигурацию", "gvim " .. awesome.conffile },
+     { "Перезапуск awesome", awesome.restart },
+     { "Выйти", awesome.quit }
   }
   -- Favorites menu
   favoritesmenu = {
-     { "browser", "luakit" },
-     { "terminal", terminal },
-     { "filemanager", "pcmanfm" }
+     { "Обозреватель", "firefox" },
+     { "Терминал", terminal },
+     { "Диспечер файлов", "pcmanfm" }
+  }
+  systemmenu = {
+     { "Перезагрузка", "reboot" },
+     { "Выключение", "shutdown -h now" },
   }
 
-  mymainmenu = awful.menu({ items = { { "Favorites", favoritesmenu },
+  mymainmenu = awful.menu({ items = { { "Избранное", favoritesmenu },
                                       { "awesome", myawesomemenu, beautiful.awesome_icon },
-                                      { "open terminal", terminal }
+                                      { "Система", systemmenu },
+                                      { "Открыть терминал", terminal }
                                     }
                           })
 

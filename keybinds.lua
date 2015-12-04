@@ -31,7 +31,7 @@ local bindings = {
         })
       end
     },
-    {{}, "XF86HomePage", "luakit",},
+    {{}, "XF86HomePage", "firefox",},
     {{}, "XF86Launch1", "lowriter",},
     {{}, "XF86Launch2", "localc",},
     {{}, "XF86Launch3", "loimpress", },
