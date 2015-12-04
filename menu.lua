@@ -4,18 +4,18 @@ local beautiful = require("beautiful")
 -- local menugen = require("menubar.menu_gen")
 
 function create_launcher()
-  local terminal = "termite"
+  --local terminal = "termite"
   myawesomemenu = {
      { "manual", terminal .. " -e man awesome" },
-     { "edit config", "leafpad " .. awesome.conffile },
+     { "edit config", "aporia " .. awesome.conffile },
      { "restart", awesome.restart },
      { "quit", awesome.quit }
   }
   -- Favorites menu
   favoritesmenu = {
      { "browser", "luakit" },
-     { "terminal", "lxterminal" },
-     { "filemanager", "pcmanfm-qt" }
+     { "terminal", terminal },
+     { "filemanager", "pcmanfm" }
   }
 
   mymainmenu = awful.menu({ items = { { "Favorites", favoritesmenu },
