@@ -1,12 +1,12 @@
 local awful = require("awful")
 local widget = require("wibox.widget")
-local naughty = require("naughty")
+-- local naughty = require("naughty")
  -- Keyboard map indicator and changer
 local module = {}
 
 module.new = function(key1, key2)
 	-- Keyboard map indicator and changer
-	kbdcfg = {}
+	local kbdcfg = {}
 	kbdcfg.clients = {} -- memory of layout for each window
 	kbdcfg.cmd = "setxkbmap"
 	kbdcfg.layout = { { "us", "", "US" }, { "ru", "", "RU" } }
