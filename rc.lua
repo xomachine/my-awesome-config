@@ -99,7 +99,7 @@ autostarter.do_autostart()
 kbdmod = require("kbd_switch")
 kbdwidget = kbdmod.new("Shift", "Control_L")
 
-
+require("keybinds")
 
 -- Menubar configuration
 menubar.utils.terminal = terminal -- Set the terminal for applications that require it
