@@ -7,11 +7,12 @@ local module = {}
 module.new = function(key1, key2)
 	-- Keyboard map indicator and changer
 	kbdcfg = {}
-	kbdcfg.clients = {}
+	kbdcfg.clients = {} -- memory of layout for each window
 	kbdcfg.cmd = "setxkbmap"
 	kbdcfg.layout = { { "us", "", "US" }, { "ru", "", "RU" } }
 	kbdcfg.default = 1  -- us is our default layout
 	kbdcfg.current = kbdcfg.default
+	kbdcfg.desktop = kbdcfg.default -- when no window focused
 	kbdcfg.widget = widget.textbox()
 	kbdcfg.widget:set_text(" " .. kbdcfg.layout[kbdcfg.current][3] .. " ")
 	kbdcfg.switch = function ()
@@ -21,9 +22,14 @@ module.new = function(key1, key2)
 	    if kbdcfg.current == kbdcfg.default then
 	      kbdcfg.clients[client.focus.window] = nil
 	    end
+	  else
+	    kbdcfg.desktop = kbdcfg.current
 	  end
 	end
 	kbdcfg.gotfocus = function (c)
+	  if not c then
+	    kbdcfg.set(kbdcfg.desktop)
+	  end
 	  if kbdcfg.clients[c.window] then
 	    kbdcfg.set(kbdcfg.clients[c.window])
 	  else
@@ -48,8 +54,33 @@ module.new = function(key1, key2)
           awful.key({key1, }, key2, function()
             kbdcfg.switch()
             end)))
+        --[[kbdcfg.kg_callback = function(m, k, s)
+            naughty.notify({text = tostring(s).." "..tostring(k)})
+            for i,v in ipairs(m)
+            do
+              naughty.notify({text = "Mod: "..tostring(i).." "..tostring(v)})
+            end
+            --awful.keygrabber.stop()
+            --root.fake_input("key_"..s, k)
+            if s=="release" and k=="Super_L" then
+              kbdcfg.gotfocus(client.focus)
+              keygrabber.stop()
+            else
+              --keygrabbler.run(kbdcfg.kg_callback)
+            end
+            return m, k, s
+            -- kbdcfg.gotfocus(client.focus)
 
-
+          end
+        local mkey = awful.key({}, "Super_L",
+            function()
+              naughty.notify({text = "press"})
+              kbdcfg.set(kbdcfg.default)
+              kbdcfg.kg = keygrabber.run(kbdcfg.kg_callback)
+            end)
+        root.keys(awful.util.table.join(root.keys(),
+          mkey))
+        ]]
         return kbdcfg
 end
 
