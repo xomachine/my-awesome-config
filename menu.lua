@@ -15,7 +15,7 @@ function create_launcher()
   favoritesmenu = {
      { "Обозреватель", "firefox" },
      { "Терминал", terminal },
-     { "Диспечер файлов", "pcmanfm" }
+     { "Файловый менеджер", "pcmanfm" }
   }
   systemmenu = {
      { "Перезагрузка", "reboot" },
