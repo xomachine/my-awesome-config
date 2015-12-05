@@ -96,10 +96,13 @@ local autostarter = require("autostart")
 autostarter.do_autostart()
 
 -- Keyboard switcher
-kbdmod = require("kbd_switch")
-kbdwidget = kbdmod.new("Shift", "Control_L")
+local kbdmod = require("kbd_switch")
+local kbdwidget = kbdmod.new("Shift", "Control_L")
 
 require("keybinds")
+
+local audio = require("audio")
+local soundwidget = audio.widget()
 
 -- Menubar configuration
 menubar.utils.terminal = terminal -- Set the terminal for applications that require it
@@ -190,6 +193,7 @@ for s = 1, screen.count() do
     if s == 1 then right_layout:add(wibox.widget.systray()) end
     -- Add widget to your layout
     right_layout:add(kbdwidget.widget)
+    right_layout:add(soundwidget)
     right_layout:add(mytextclock)
     right_layout:add(mylayoutbox[s])
 
