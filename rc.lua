@@ -101,8 +101,7 @@ local kbdwidget = kbdmod.new("Shift", "Control_L")
 
 require("keybinds")
 
-local audio = require("audio")
-local soundwidget = audio.widget()
+local soundwidget = require("audio")
 
 -- Menubar configuration
 menubar.utils.terminal = terminal -- Set the terminal for applications that require it
