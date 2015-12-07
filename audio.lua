@@ -58,8 +58,8 @@ awidget:buttons(awful.util.table.join(unpack(buts)))
 awidget:set_text(awidget.get_volume())
 local bindings = {
   awful.key({}, "XF86AudioMute", awidget.mute),
-  awful.key({}, "XF86AudioPrev", awidget.decrease),
-  awful.key({}, "XF86AudioNext", awidget.increase),
+  awful.key({}, "XF86AudioRaiseVolume", awidget.increase),
+  awful.key({}, "XF86AudioLowerVolume", awidget.decrease),
 }
 root.keys(awful.util.table.join(
   root.keys(), unpack(bindings)))
