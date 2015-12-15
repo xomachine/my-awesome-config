@@ -70,13 +70,7 @@ local layouts =
 }
 -- }}}
 
--- {{{ Wallpaper
-if beautiful.wallpaper then
-    for s = 1, screen.count() do
-        gears.wallpaper.maximized(beautiful.wallpaper, s, true)
-    end
-end
--- }}}
+
 
 -- {{{ Tags
 -- Define a tag table which hold all screen tags.
@@ -99,9 +93,14 @@ autostarter.do_autostart()
 local kbdmod = require("kbd_switch")
 local kbdwidget = kbdmod.new("Shift", "Control_L")
 
+-- Custom keybinds
 require("keybinds")
 
+-- Sound widget
 local soundwidget = require("audio")
+
+-- Wallpaper
+require("wallpaper")
 
 -- Menubar configuration
 menubar.utils.terminal = terminal -- Set the terminal for applications that require it
