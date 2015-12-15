@@ -8,6 +8,7 @@ local bindings = {
     {{}, "XF86Launch1", "lowriter",},
     {{}, "XF86Launch2", "localc",},
     {{}, "XF86Launch3", "loimpress", },
+    {{}, "XF86Search", "pcmanfm", },
   }
 local prepared = {}
 for k, v in ipairs(bindings)
