@@ -1,6 +1,6 @@
 local awful = require("awful")
 local widget = require("wibox.widget")
--- local naughty = require("naughty")
+--local notify = require("naughty").notify
  -- Keyboard map indicator and changer
 local module = {}
 
@@ -13,6 +13,7 @@ module.new = function(key1, key2)
 	kbdcfg.default = 1  -- us is our default layout
 	kbdcfg.current = kbdcfg.default
 	kbdcfg.desktop = kbdcfg.default -- when no window focused
+  kbdcfg.frozen_focus = false
 	kbdcfg.widget = widget.textbox()
 	kbdcfg.widget:set_text(" " .. kbdcfg.layout[kbdcfg.current][3] .. " ")
 	kbdcfg.switch = function ()
@@ -29,13 +30,16 @@ module.new = function(key1, key2)
 	kbdcfg.gotfocus = function (c)
 	  if not c then
 	    kbdcfg.set(kbdcfg.desktop)
+      return
 	  end
+    if kbdcfg.frozen_focus then return end
 	  if kbdcfg.clients[c.window] then
 	    kbdcfg.set(kbdcfg.clients[c.window])
 	  else
 	    kbdcfg.set(kbdcfg.default)
 	  end
 	end
+  
 	kbdcfg.set = function (l)
 	  kbdcfg.current = l
 	  local t = kbdcfg.layout[kbdcfg.current]
@@ -50,38 +54,30 @@ module.new = function(key1, key2)
 	  awful.util.table.join(awful.button({ }, 1, function () kbdcfg.switch() end))
 	  )
         -- Set keybind for layout switch
-        root.keys(awful.util.table.join(root.keys(),
-          awful.key({key1, }, key2, function()
-            kbdcfg.switch()
-            end)))
-        --[[kbdcfg.kg_callback = function(m, k, s)
-            naughty.notify({text = tostring(s).." "..tostring(k)})
-            for i,v in ipairs(m)
-            do
-              naughty.notify({text = "Mod: "..tostring(i).." "..tostring(v)})
-            end
-            --awful.keygrabber.stop()
-            --root.fake_input("key_"..s, k)
-            if s=="release" and k=="Super_L" then
-              kbdcfg.gotfocus(client.focus)
-              keygrabber.stop()
-            else
-              --keygrabbler.run(kbdcfg.kg_callback)
-            end
-            return m, k, s
-            -- kbdcfg.gotfocus(client.focus)
+  root.keys(awful.util.table.join(root.keys(),
+    awful.key({key1, }, key2, function()
+      kbdcfg.switch()
+      end)))
+  
+  -- Keyboard switch to default when using a hotkeys
+  kbdcfg.keytimer = timer({timeout = 2})
+  kbdcfg.keytimer:connect_signal("timeout", function()
+    kbdcfg.frozen_focus = false
+    kbdcfg.gotfocus(client.focus)
+  end)
+  local mod_pressed = function()
+    kbdcfg.set(kbdcfg.default)
+    kbdcfg.frozen_focus = true
+    awful.keygrabber.stop()
+    kbdcfg.keytimer:again()
+  end
+  local mkey = awful.key({}, "Super_L", mod_pressed)
+  local ckey = awful.key({}, "Control_L", mod_pressed)
+  root.keys(awful.util.table.join(root.keys(),
+   mkey,ckey))
+  key.connect_signal("press", function(a, b, c) if kbdcfg.frozen_focus then kbdcfg.keytimer:again() end end)
 
-          end
-        local mkey = awful.key({}, "Super_L",
-            function()
-              naughty.notify({text = "press"})
-              kbdcfg.set(kbdcfg.default)
-              kbdcfg.kg = keygrabber.run(kbdcfg.kg_callback)
-            end)
-        root.keys(awful.util.table.join(root.keys(),
-          mkey))
-        ]]
-        return kbdcfg
+  return kbdcfg
 end
 
 return module
