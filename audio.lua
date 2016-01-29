@@ -7,7 +7,7 @@ local awidget = widget.textbox()
 
 awidget.get_volume = function()
   return awful.util.pread(
-    "amixer get Master | grep -o '\\[[0-9]\\{2,3\\}%\\]'"
+    "amixer get Master | grep -o '\\[[0-9]\\{1,3\\}%\\]'"
     )
 end
 awidget.curr_id = nil
