@@ -44,6 +44,8 @@ beautiful.init("/usr/share/awesome/themes/default/theme.lua")
 terminal = "termit"
 editor = os.getenv("EDITOR") or "nano"
 editor_cmd = terminal .. " -e " .. editor
+-- Устанавливаем системную локаль
+os.setlocale(os.getenv("LANG"))
 
 -- Default modkey.
 -- Usually, Mod4 is the key with a logo between Control and Alt.
