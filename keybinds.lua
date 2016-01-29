@@ -9,6 +9,7 @@ local bindings = {
     {{}, "XF86Launch2", "localc",},
     {{}, "XF86Launch3", "loimpress", },
     {{}, "XF86Search", "pcmanfm", },
+    {{}, "Print", "gnome-screenshot -i", },
   }
 local prepared = {}
 for k, v in ipairs(bindings)
