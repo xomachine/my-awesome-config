@@ -4,7 +4,7 @@ local notify = require("naughty").notify
 
 local bindings = {
     -- {modifiers = {}, key = "", command = "", func = function end }
-    {{}, "XF86HomePage", "firefox",},
+    {{}, "XF86HomePage", os.getenv("BROWSER"),},
     {{}, "XF86Launch1", "lowriter",},
     {{}, "XF86Launch2", "localc",},
     {{}, "XF86Launch3", "loimpress", },
