@@ -8,8 +8,8 @@ local bindings = {
     {{}, "XF86Launch1", "lowriter",},
     {{}, "XF86Launch2", "localc",},
     {{}, "XF86Launch3", "loimpress", },
-    {{}, "XF86Search", "pcmanfm", },
-    {{}, "Print", "gnome-screenshot -i", },
+    {{}, "XF86Search", os.getenv("FILEMANAGER"), },
+    {{}, "Print", "import -screen -frame png:- > \"~/$(date \"+%d.%m.%Y-%H-%m-%S\").png\"", },
   }
 local prepared = {}
 for k, v in ipairs(bindings)
