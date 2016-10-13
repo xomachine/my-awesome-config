@@ -1,32 +1,66 @@
 local module = {}
+local lfs = require("lfs")
 local awful = require("awful")
 local beautiful = require("beautiful")
 local menugen = require("menubar.menu_gen")
 local mutil = require("menubar.utils")
 local notify = require("naughty").notify
 
-module.create_launcher = function()
-  --local terminal = "termite"
-  local desktops = mutil.parse_dir("/usr/share/applications")
-  local maincategories = {AudioVideo = {"Мультимедиа", {}},
-                          Audio = {"Звук", {}},
-                          Video = {"Видео", {}},
-                          Developement = {"Разработка", {}},
-                          Education = {"Образование", {}},
-                          Game = {"Игры", {}},
-                          Graphics = {"Графика", {}},
-                          Network = {"Интернет", {}},
-                          Office = {"Офис", {}},
-                          Science = {"Наука", {}},
-                          Settings = {"Настройки", {}},
-                          System = {"Система", {}},
-                          Utility = {"Утилиты", {}},
-                          Others = {"Другие", {}}
-                  }
+function dump(q, n)
+  for k,v in pairs(q) do
+    if type(v) == "table" then
+      dump(v, k)
+    else
+      --notify({text = (n and tostring(n)..":" or "")..tostring(k).." = "..tostring(v)})
+      print((n and tostring(n)..":" or "")..tostring(k).." = "..tostring(v))
+    end
+  end
+end
 
-  appmenu = {} --menugen.generate()
+local parse_ini = function(inifile)
+  local parsed = {}
+  local current_top = ""
+  for line in io.lines(inifile) do
+    local top_entry = line:match('^%[([^%]]+)%]')
+    local key, val = line:match("([^=]+)=(.*)")
+    if top_entry then
+      current_top = top_entry
+    elseif key then
+      if parsed[current_top] == nil then
+        parsed[current_top] = {}
+      end
+      parsed[current_top][key] = val
+    end
+  end
+  return parsed
+end
+
+local parse_categories = function(cat_dir)
+  local categories = {}
+  local locale = os.getenv("LANG")
+  for file in lfs.dir(cat_dir) do
+    if file:match('^.+directory$') then
+      local category = parse_ini(cat_dir.."/"..file)
+      if category["Desktop Entry"] ~= nil then
+        category = category["Desktop Entry"]
+        local category_name = category["Name["..locale.."]"] or category["Name["..locale:sub(1,2).."]"] or category["Name"]
+        local category_icon_name = category["Icon"] or nil
+        local category_icon = mutil.lookup_icon(category_icon_name)
+        if category_name then
+          categories[category.Name] = {category_name, {}, category_icon}
+        end
+      end
+    end
+  end
+  return categories
+end
+
+local generate_appmenu = function()
+  local maincategories = parse_categories("/usr/share/desktop-directories")
+  local desktops = mutil.parse_dir("/usr/share/applications")
+  local appmenu = {} --menugen.generate()
   for i, desktop in ipairs(desktops) do
-    local category = "Others"
+    local category = "Other"
     local appname = "Noname"
     local exec = ""
     local icon = nil
@@ -39,7 +73,7 @@ module.create_launcher = function()
     end
 
     if desktop.Exec then
-      exec = "sh -c \"cd '"..dir.."'; "..desktop.Exec.."\""
+      exec = "sh -c \"cd '"..dir.."'; "..desktop.Exec:gsub('%%%a','').."\""
     end
     if desktop.Terminal == true then
       exec = terminal.." -e "..exec
@@ -59,38 +93,48 @@ module.create_launcher = function()
     elseif desktop.GenericName then
       appname = desktop.GenericName
     end
-    --notify({text = appname..": ".. exec, timeout = 0})
+    if maincategories[category] == nil then
+      category = "Other"
+    end
     table.insert(maincategories[category][2], {appname, exec, icon})
     ::continue::
   end
   for i, submenu in pairs(maincategories) do
-    table.insert(appmenu, submenu)
+    if #submenu[2] > 0 then
+      table.insert(appmenu, submenu)
+    end
   end
-  myawesomemenu = {
-     { "Помощь", terminal .. " -e man awesome" },
-     { "Конфигурация", "gvim " .. awesome.conffile },
+  return appmenu
+end
+
+module.create_launcher = function()
+
+  local appmenu = generate_appmenu()--menugen.generate()
+  local myawesomemenu = {
+     { "Помощь", terminal .. " -e 'man awesome'" },
+     { "Конфигурация", terminal .. " -e '" .. os.getenv("EDITOR") .. " " .. awesome.conffile .. "'" },
      { "Перезапуск", awesome.restart },
      { "Выйти", awesome.quit }
   }
   -- Favorites menu
-  favoritesmenu = {
+  local favoritesmenu = {
      { "Обозреватель", "firefox" },
      { "Терминал", terminal },
      { "Файлы", "pcmanfm" }
   }
-  systemmenu = {
+  local systemmenu = {
      { "Перезагрузка", "reboot" },
      { "Выключение", "shutdown -h now" },
   }
 
   mymainmenu = awful.menu({ items = { { "Избранное", favoritesmenu },
-                                      { "Applications", appmenu },
+                                      { "Приложения", appmenu },
                                       { "awesome", myawesomemenu, beautiful.awesome_icon },
                                       { "Система", systemmenu },
                                     }
                           })
 
-  mylauncher = awful.widget.launcher({ image = beautiful.awesome_icon,
+  local mylauncher = awful.widget.launcher({ image = beautiful.awesome_icon,
                                        menu = mymainmenu })
   return mylauncher
 end
