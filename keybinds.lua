@@ -8,8 +8,9 @@ local bindings = {
     {{}, "XF86Launch1", "lowriter",},
     {{}, "XF86Launch2", "localc",},
     {{}, "XF86Launch3", "loimpress", },
-    {{}, "XF86Search", os.getenv("FILEMANAGER"), },
-    {{}, "Print", "import -screen -frame png:- > \"~/$(date \"+%d.%m.%Y-%H-%m-%S\").png\"", },
+    --{{}, "XF86Search", os.getenv("FILEMANAGER") or "pcmanfm-qt", },
+    {{}, "XF86Mail", os.getenv("FILEMANAGER") or "pcmanfm-qt", },
+    {{}, "Print", "bash -c 'import -window root -frame png:- "..os.getenv("HOME").."/Pictures/$(date +%T_%d-%m-%y).png'", },
   }
 local prepared = {}
 for k, v in ipairs(bindings)
