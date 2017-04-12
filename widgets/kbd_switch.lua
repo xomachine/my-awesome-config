@@ -79,5 +79,5 @@ module.new = function(key1, key2)
 
   return kbdcfg
 end
-
-return module
+return awful.widget.keyboardlayout:new()
+--return module
