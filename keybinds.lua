@@ -10,7 +10,7 @@ local bindings = {
     {{}, "XF86Launch3", "loimpress", },
     --{{}, "XF86Search", os.getenv("FILEMANAGER") or "pcmanfm-qt", },
     {{}, "XF86Mail", os.getenv("FILEMANAGER") or "pcmanfm-qt", },
-    {{}, "Print", "bash -c 'import -window root -frame png:- "..os.getenv("HOME").."/Pictures/$(date +%T_%d-%m-%y).png'", },
+    {{}, "Print", "bash -c 'import -window root -frame png:- "..os.getenv("HOME").."/Pictures/$(date +%y-%m-%d_%T).png'", },
   }
 local prepared = {}
 for k, v in ipairs(bindings)
