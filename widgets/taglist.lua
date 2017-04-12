@@ -19,7 +19,6 @@ local taglist_buttons = gears.table.join(
 
 
 return function(screen)
-  print(tostring(screen))
   awful.tag({ "1", "2", "3", "4", "5", "6", "7", "8", "9" }, screen, awful.layout.layouts[1])
   screen.taglist = awful.widget.taglist(screen, awful.widget.taglist.filter.all, taglist_buttons)
   return screen.taglist
