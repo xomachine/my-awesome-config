@@ -12,7 +12,6 @@ function is_running(ete)
     return true
   end
   local answer = fd:read("*all")
-  print("Answer is '"..answer.."'")
   io.close(fd)
   if string.sub(answer, 1, 1) == "0" then
     return false
@@ -36,23 +35,22 @@ function autostart(dir)
             print("Автозапуск Awesome: Запускается: " .. executable)
             local start_cmd = dir .. "/" .. executable .. ""
             if is_running(start_cmd) then
-              print(executable .. " is already started!")
+              print(executable .. " уже запущен!")
             else
               awful.spawn.with_shell(start_cmd) -- запуск в фоне
             end
         elseif c=='@' then  -- символические ссылки
             print("Автозапуск Awesome: Символические ссылки пропускаются: " .. file)
         elseif c=='p' then
-            print("Probably desktop file")
             local length = string.len(file)
             if length > 8 then
               local extention = string.sub(file, -7)
               if extention == "desktop" then
-                print("Executing desktop file")
+                print("Автозапуск Awesome: Запускается "..file)
                 local dfile = utils.parse_desktop_file(dir .. "/" .. file)
-                print(dfile.Exec)
+                if dfile == nil then print("Не могу разобрать "..file) end
                 if is_running(dfile.Exec) then
-                  print(file .. " is already started!")
+                  print(file .. " уже запущен!")
                 else
                   awful.spawn.with_shell(dfile.Exec)
                 end

@@ -1,8 +1,10 @@
 local awful = require("awful")
 local gears = require("gears")
-local modkey = require("general").modkey
 local hotkeys_popup = require("awful.hotkeys_popup").widget
 local mymainmenu = require("menu")
+local general = require("general")
+local modkey = general.modkey
+local terminal = general.terminal
 
 -- {{ Mouse buttons
 root.buttons(gears.table.join(
@@ -95,7 +97,7 @@ local globalkeys = gears.table.join(
               {description = "restore minimized", group = "client"}),
 
     -- Prompt
-    awful.key({ modkey },            "r",     function () awful.screen.focused().mypromptbox:run() end,
+    awful.key({ modkey },            "r",     function () awful.screen.focused().prompt:run() end,
               {description = "run prompt", group = "launcher"}),
 
     awful.key({ modkey }, "x",

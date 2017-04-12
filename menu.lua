@@ -4,7 +4,9 @@ local beautiful = require("beautiful")
 local menugen = require("menubar.menu_gen")
 local mutil = require("menubar.utils")
 local notify = require("naughty").notify
-local terminal = require("general").terminal
+local general = require("general")
+local terminal = general.terminal
+local editor_cmd = general.editor_cmd
 local hotkeys_popup = require("awful.hotkeys_popup").widget
 
 function dump(q, n)
@@ -112,8 +114,9 @@ end
   --local appmenu = generate_appmenu()--menugen.generate()
 local myawesomemenu = {
    { "Горячие клавиши", function() return false, hotkeys_popup.show_help end},
-   { "Помощь", terminal .. " -e 'man awesome'" },
-   { "Конфигурация", terminal .. " -e '" .. os.getenv("EDITOR") .. " " .. awesome.conffile .. "'" },
+   { "Помощь", terminal .. " -e man awesome" },
+   { "Конфигурация", editor_cmd .. " " .. awesome.conffile  },
+   { "Проверка", "bash -c 'Xephyr :1; DISPLAY=:1 awesome;'"},
    { "Перезапуск", awesome.restart },
    { "Выйти", awesome.quit }
 }
