@@ -1,4 +1,3 @@
-local module = {}
 local lfs = require("lfs")
 local awful = require("awful")
 local beautiful = require("beautiful")
@@ -109,34 +108,32 @@ local generate_appmenu = function()
   return appmenu
 end
 
-module.create_menu = function()
 
   --local appmenu = generate_appmenu()--menugen.generate()
-  local myawesomemenu = {
-     { "Горячие клавиши", function() return false, hotkeys_popup.show_help end},
-     { "Помощь", terminal .. " -e 'man awesome'" },
-     { "Конфигурация", terminal .. " -e '" .. os.getenv("EDITOR") .. " " .. awesome.conffile .. "'" },
-     { "Перезапуск", awesome.restart },
-     { "Выйти", awesome.quit }
-  }
-  -- Favorites menu
-  local favoritesmenu = {
-     { "Обозреватель", "firefox" },
-     { "Терминал", terminal },
-     { "Файлы", "pcmanfm" }
-  }
-  local systemmenu = {
-     { "Перезагрузка", "reboot" },
-     { "Выключение", "shutdown -h now" },
-  }
+local myawesomemenu = {
+   { "Горячие клавиши", function() return false, hotkeys_popup.show_help end},
+   { "Помощь", terminal .. " -e 'man awesome'" },
+   { "Конфигурация", terminal .. " -e '" .. os.getenv("EDITOR") .. " " .. awesome.conffile .. "'" },
+   { "Перезапуск", awesome.restart },
+   { "Выйти", awesome.quit }
+}
+-- Favorites menu
+local favoritesmenu = {
+   { "Обозреватель", "firefox" },
+   { "Терминал", terminal },
+   { "Файлы", "pcmanfm" }
+}
+local systemmenu = {
+   { "Перезагрузка", "reboot" },
+   { "Выключение", "shutdown -h now" },
+}
 
-  local mymainmenu = awful.menu({ items = { { "Избранное", favoritesmenu },
-                                      { "awesome", myawesomemenu, beautiful.awesome_icon },
-                                      { "Система", systemmenu },
-                                    }
-                          })
+local mymainmenu = awful.menu({ items = { { "Избранное", favoritesmenu },
+                                    { "awesome", myawesomemenu, beautiful.awesome_icon },
+                                    { "Система", systemmenu },
+                                  }
+                        })
 
-  return mymainmenu
-end
+return mymainmenu
 
-return module
+

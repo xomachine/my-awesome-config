@@ -91,14 +91,12 @@ end
 -- }}}
 
 -- User defined customizations {{{
+local mymainmenu = require("menu")
 require("wallpaper")
 require("autostart")
 require("standart_bindings")
 require("keybinds")
 require("rules")
-mymainmenu = require("menu").create_menu()
-mylauncher = awful.widget.launcher({ image = beautiful.awesome_icon,
-                                     menu = mymainmenu })
 
 --}}}
 
@@ -198,16 +196,6 @@ awful.screen.connect_for_each_screen(function(s)
 end)
 -- }}}
 
--- {{{ Mouse bindings
-root.buttons(gears.table.join(
-    awful.button({ }, 3, function () mymainmenu:toggle() end),
-    awful.button({ }, 4, awful.tag.viewnext),
-    awful.button({ }, 5, awful.tag.viewprev)
-))
--- }}}
-
--- {{{ Rules
--- Rules to apply to new clients (through the "manage" signal).
 -- {{{ Signals
 -- Signal function to execute when a new client appears.
 client.connect_signal("manage", function (c)
