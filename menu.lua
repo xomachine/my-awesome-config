@@ -5,6 +5,8 @@ local beautiful = require("beautiful")
 local menugen = require("menubar.menu_gen")
 local mutil = require("menubar.utils")
 local notify = require("naughty").notify
+local terminal = require("general").terminal
+local hotkeys_popup = require("awful.hotkeys_popup").widget
 
 function dump(q, n)
   for k,v in pairs(q) do
@@ -107,10 +109,11 @@ local generate_appmenu = function()
   return appmenu
 end
 
-module.create_launcher = function()
+module.create_menu = function()
 
-  local appmenu = generate_appmenu()--menugen.generate()
+  --local appmenu = generate_appmenu()--menugen.generate()
   local myawesomemenu = {
+     { "Горячие клавиши", function() return false, hotkeys_popup.show_help end},
      { "Помощь", terminal .. " -e 'man awesome'" },
      { "Конфигурация", terminal .. " -e '" .. os.getenv("EDITOR") .. " " .. awesome.conffile .. "'" },
      { "Перезапуск", awesome.restart },
@@ -127,16 +130,13 @@ module.create_launcher = function()
      { "Выключение", "shutdown -h now" },
   }
 
-  mymainmenu = awful.menu({ items = { { "Избранное", favoritesmenu },
-                                      { "Приложения", appmenu },
+  local mymainmenu = awful.menu({ items = { { "Избранное", favoritesmenu },
                                       { "awesome", myawesomemenu, beautiful.awesome_icon },
                                       { "Система", systemmenu },
                                     }
                           })
 
-  local mylauncher = awful.widget.launcher({ image = beautiful.awesome_icon,
-                                       menu = mymainmenu })
-  return mylauncher
+  return mymainmenu
 end
 
 return module

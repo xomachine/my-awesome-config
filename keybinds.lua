@@ -16,7 +16,7 @@ local prepared = {}
 for k, v in ipairs(bindings)
 do
   prepared = awful.util.table.join(prepared,
-    awful.key(v[1], v[2], function() awful.util.spawn(v[3]) if v[4] then v[4]() end end )
+    awful.key(v[1], v[2], function() awful.util.spawn(v[3]) if v[4] then v[4]() end end, {description = "Start "..v[3]} )
   )
 end
 root.keys(awful.util.table.join(root.keys(), prepared))
