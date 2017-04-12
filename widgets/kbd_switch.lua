@@ -1,10 +1,10 @@
 local awful = require("awful")
 local widget = require("wibox.widget")
+local gears = require("gears")
 --local notify = require("naughty").notify
  -- Keyboard map indicator and changer
-local module = {}
 
-module.new = function(key1, key2)
+local new = function(key1, key2)
 	-- Keyboard map indicator and changer
 	local kbdcfg = {}
 	kbdcfg.clients = {} -- memory of layout for each window
@@ -60,7 +60,7 @@ module.new = function(key1, key2)
       end)))
   
   -- Keyboard switch to default when using a hotkeys
-  kbdcfg.keytimer = timer({timeout = 2})
+  kbdcfg.keytimer = gears.timer({timeout = 2})
   kbdcfg.keytimer:connect_signal("timeout", function()
     kbdcfg.frozen_focus = false
     kbdcfg.gotfocus(client.focus)
@@ -79,5 +79,7 @@ module.new = function(key1, key2)
 
   return kbdcfg
 end
-return awful.widget.keyboardlayout:new()
---return module
+return function (screen)
+  screen.kbd_switch = new("Shift", "Control_L")
+  return screen.kbd_switch.widget
+end
