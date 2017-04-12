@@ -39,7 +39,6 @@ function AudioWidget:increase()
   self:crease("+")
 end
 function AudioWidget:mute()
-  self:do_and_notify("amixer set Master toggle", on_mute_status)
   local on_mute_status = function(status)
     local state = get_mute(status)
     if state == "[on]" then
@@ -48,6 +47,7 @@ function AudioWidget:mute()
     self.widget:set_text(tostring(state))
     return "Звук: "..tostring(state)
   end
+  self:do_and_notify("amixer set Master toggle", on_mute_status)
 end
 function AudioWidget:new()
   --local av = {
