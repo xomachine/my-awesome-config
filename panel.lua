@@ -30,7 +30,8 @@ local function make_panel_for_screen(screen)
       { -- Right widgets
           layout = wibox.layout.fixed.horizontal,
           wibox.widget.systray(),
-          awful.widget.keyboardlayout(),
+          safeload("kbd_switch"),
+          --awful.widget.keyboardlayout(),
           safeload("audio"),
           wibox.widget.textclock(),
           safeload("layoutbox")
