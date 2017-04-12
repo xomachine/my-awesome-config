@@ -19,12 +19,28 @@ function is_running(ete)
   return true
 end
 
+local function start(dir, file)
+  local length = string.len(file)
+  if length > 8 then
+    local extention = string.sub(file, -7)
+    if extention == "desktop" then
+      print("Автозапуск Awesome: Запускается "..tostring(file))
+      local dfile = utils.parse_desktop_file(dir .. "/" .. tostring(file))
+      if dfile == nil then print("Не могу разобрать "..file) end
+      if is_running(dfile.Exec) then
+        print(file .. " уже запущен!")
+      else
+        awful.spawn.with_shell(dfile.Exec)
+      end
+    end
+  end
+end
 -- Автозапуск
-function autostart(dir)
+local function autostart(dir)
     if not dir then
         do return nil end
     end
-    local fd = io.popen("ls -1 -F " .. dir)
+    local fd = io.popen("ls -1 -L -F " .. dir)
     if not fd then
         do return nil end
     end
@@ -40,22 +56,11 @@ function autostart(dir)
               awful.spawn.with_shell(start_cmd) -- запуск в фоне
             end
         elseif c=='@' then  -- символические ссылки
-            print("Автозапуск Awesome: Символические ссылки пропускаются: " .. file)
+          --print("Автозапуск Awesome: Символические ссылки пропускаются: " .. file)
+          local cc = string.sub(file,-2,-2)   --  символ
+          start(dir, string.sub(file,1,-2))
         elseif c=='p' then
-            local length = string.len(file)
-            if length > 8 then
-              local extention = string.sub(file, -7)
-              if extention == "desktop" then
-                print("Автозапуск Awesome: Запускается "..file)
-                local dfile = utils.parse_desktop_file(dir .. "/" .. file)
-                if dfile == nil then print("Не могу разобрать "..file) end
-                if is_running(dfile.Exec) then
-                  print(file .. " уже запущен!")
-                else
-                  awful.spawn.with_shell(dfile.Exec)
-                end
-              end
-            end
+            start(dir, file)
         else
             print ("Автозапуск Awesome: Игнорируем файл " .. file .. " , т.к. не является исполняемым.")
         end
