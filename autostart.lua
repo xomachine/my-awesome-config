@@ -26,7 +26,7 @@ local function start(dir, file)
     if extention == "desktop" then
       print("Автозапуск Awesome: Запускается "..tostring(file))
       local dfile = utils.parse_desktop_file(dir .. "/" .. tostring(file))
-      if dfile == nil then print("Не могу разобрать "..file) end
+      if dfile == nil then print("Не могу разобрать "..file) return end
       if is_running(dfile.Exec) then
         print(file .. " уже запущен!")
       else
