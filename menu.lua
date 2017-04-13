@@ -5,8 +5,6 @@ local menugen = require("menubar.menu_gen")
 local mutil = require("menubar.utils")
 local notify = require("naughty").notify
 local general = require("general")
-local terminal = general.terminal
-local editor_cmd = general.editor_cmd
 local hotkeys_popup = require("awful.hotkeys_popup").widget
 
 function dump(q, n)
@@ -79,7 +77,7 @@ local generate_appmenu = function()
       exec = "sh -c \"cd '"..dir.."'; "..desktop.Exec:gsub('%%%a','').."\""
     end
     if desktop.Terminal == true then
-      exec = terminal.." -e "..exec
+      exec = general.terminal.." -e "..exec
     end
     if desktop.Icon then
       icon = mutil.lookup_icon(desktop.Icon)
@@ -114,16 +112,16 @@ end
   --local appmenu = generate_appmenu()--menugen.generate()
 local myawesomemenu = {
    { "Горячие клавиши", function() return false, hotkeys_popup.show_help end},
-   { "Помощь", terminal .. " -e man awesome" },
-   { "Конфигурация", editor_cmd .. " " .. awesome.conffile  },
-   { "Проверка", terminal .. " -e bash -c 'Xephyr :1 & sleep 1s; DISPLAY=:1 awesome;'"},
+   { "Помощь", general.terminal .. " -e man awesome" },
+   { "Конфигурация", general.editor_cmd .. " " .. awesome.conffile  },
+   { "Проверка", general.terminal .. " -e bash -c 'Xephyr :1 & sleep 1s; DISPLAY=:1 awesome;'"},
    { "Перезапуск", awesome.restart },
    { "Выйти", awesome.quit }
 }
 -- Favorites menu
 local favoritesmenu = {
-   { "Обозреватель", "firefox" },
-   { "Терминал", terminal },
+   { "Обозреватель", general.browser },
+   { "Терминал", general.terminal },
    { "Файлы", "pcmanfm" }
 }
 local systemmenu = {

@@ -1,15 +1,15 @@
-
+local general = require("general")
 local awful = require("awful")
 local notify = require("naughty").notify
 
 local bindings = {
     -- {modifiers = {}, key = "", command = "", func = function end }
-    {{}, "XF86HomePage", os.getenv("BROWSER"),},
+    {{}, "XF86HomePage", general.browser,},
     {{}, "XF86Launch1", "lowriter",},
     {{}, "XF86Launch2", "localc",},
     {{}, "XF86Launch3", "loimpress", },
     --{{}, "XF86Search", os.getenv("FILEMANAGER") or "pcmanfm-qt", },
-    {{}, "XF86Mail", os.getenv("FILEMANAGER") or "pcmanfm-qt", },
+    {{}, "XF86Mail", general.filemanager, },
     {{}, "Print", "bash -c 'import -window root -frame png:- "..os.getenv("HOME").."/Pictures/$(date +%y-%m-%d_%T).png'", },
   }
 local prepared = {}
