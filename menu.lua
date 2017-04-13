@@ -122,7 +122,7 @@ local myawesomemenu = {
 local favoritesmenu = {
    { "Обозреватель", general.browser },
    { "Терминал", general.terminal },
-   { "Файлы", "pcmanfm" }
+   { "Файлы", general.filemanager }
 }
 local systemmenu = {
    { "Перезагрузка", "reboot" },
