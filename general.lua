@@ -1,7 +1,7 @@
 local module = {}
 
 module.modkey = "Mod4"
-module.terminal = "lxterminal"
+module.terminal = os.getenv("TERMINAL") or "lxterminal"
 module.editor = os.getenv("EDITOR") or "nano"
 module.editor_cmd = module.terminal .. " -e " .. module.editor
 
