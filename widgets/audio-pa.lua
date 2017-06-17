@@ -63,6 +63,7 @@ local function parse_pactl_list(on_done)
   end
   local donecb = function ()
     on_done(result)
+    collectgarbage("collect")
   end
   awful.spawn.with_line_callback("bash -c 'LANG= pactl list'",
                                  {stdout = cb, output_done = donecb})
@@ -70,21 +71,7 @@ local function parse_pactl_list(on_done)
 end
 
 function AudioWidget:update_volume()
-  local cb = function(result)
-    for sname, sink in pairs(result["sinks"]) do
-      local vol = parse_volume(sink["Volume"])
-      local mute = sink["Mute"]
-      local _,_,bal = string.find(sink["Volume"], "balance (%d+%.%d+)")
-      if mute == "yes" then
-        self:displayState("Звук", "[off]")
-      elseif bal == "0.00" then
-        self:displayState("Громкость", tostring(vol[1]))
-      else
-        self:displayState("Громкость", tostring(vol[1]).."|"..tostring(vol[2]))
-      end
-    end
-  end
-  parse_pactl_list(cb)
+  parse_pactl_list(self.volume_callback)
 end
 
 function AudioWidget:change_volume(value)
@@ -108,6 +95,18 @@ function AudioWidget:new()
   av.widget = widget.textbox()
   av.master = "@DEFAULT_SINK@"
   av.msgid = nil
+  av.volume_callback = function(result)
+    for sname, sink in pairs(result["sinks"]) do
+      local vol = parse_volume(sink["Volume"])
+      local mute = sink["Mute"]
+      local _,_,bal = string.find(sink["Volume"], "balance (%d+%.%d+)")
+      if mute == "yes" then av:displayState("Звук", "[off]")
+      elseif bal == "0.00" then av:displayState("Громкость", tostring(vol[1]))
+      else
+        av:displayState("Громкость", tostring(vol[1]).."|"..tostring(vol[2]))
+      end
+    end
+  end
   local buts = {
     awful.button({}, 1, function() awful.spawn.spawn("pavucontrol") end),
     awful.button({}, 2, function() av:toggle_mute() end),
