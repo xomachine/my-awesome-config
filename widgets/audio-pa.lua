@@ -26,7 +26,7 @@ local function parse_pactl_list(on_done)
     if string.match(line, "^%s%s%S.*$") then
     -- Third lvl directives
       if string.find(line, "=") then
-        local k, v = string.match(line, "^%s([^%s=]+)%s+=%s+(.*)$")
+        local k, v = string.match(line, "^%s%s([^=]+)%s+=%s+(.*)$")
         if k ~= nil then
           result[subtype][toplvl][scndlvl][k] = v
         end
