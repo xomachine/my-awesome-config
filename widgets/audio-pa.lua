@@ -145,6 +145,7 @@ return function(screen)
     awful.key({}, "XF86AudioLowerVolume",
               function() av:change_volume("-3%") end),
   }
+  root.keys(awful.util.table.join(root.keys(), unpack(bindings)))
   return awidget
 end
 
