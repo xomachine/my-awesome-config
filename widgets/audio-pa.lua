@@ -12,11 +12,35 @@ local function parse_volume(volstr)
   return result
 end
 
+local function get_default_sink_source(pactl_list, setter)
+  local sink, source = nil, nil
+  local cb = function (line)
+    if sink == nil then
+      sink = string.match(line, "^Default Sink: (.*)$")
+      if sink ~= nil then return end
+    end
+    if source == nil then
+      source = string.match(line, "^Default Source: (.*)$")
+    end
+  end
+  local done_cb = function()
+    for sname, stable in pairs(pactl_list.Sink) do
+      if stable.Name == sink then sink = sname  end
+    end
+    for sname, stable in pairs(pactl_list.Source) do
+      if stable.Name == source then source = sname end
+    end
+    setter(sink, source)
+  end
+  awful.spawn.with_line_callback("bash -c 'LANG= pactl info'",
+                                 {stdout=cb, output_done=done_cb})
+end
+
 local function parse_pactl_list(on_done)
   local result = {
-    sources = {},
-    sinks = {},
-    clients = {},
+    Source = {},
+    Sink = {},
+    Client = {},
     unsorted = {}
   }
   local toplvl = ""
@@ -27,9 +51,7 @@ local function parse_pactl_list(on_done)
     -- Third lvl directives
       if string.find(line, "=") then
         local k, v = string.match(line, "^%s%s([^=]+)%s+=%s+\"(.*)\"$")
-        if k ~= nil then
-          result[subtype][toplvl][scndlvl][k] = v
-        end
+        if k ~= nil then result[subtype][toplvl][scndlvl][k] = v end
       else
         table.insert(result[subtype][toplvl][scndlvl], line)
       end
@@ -38,24 +60,13 @@ local function parse_pactl_list(on_done)
       local k, v = string.match(line, "^%s(%S[^:]+):%s*(.*)$")
       if k ~= nil then
         scndlvl = k
-        if string.len(v) == 0 then
-          result[subtype][toplvl][k] = {}
-        else
-          result[subtype][toplvl][k] = v
-        end
+        if string.len(v) == 0 then result[subtype][toplvl][k] = {}
+        else result[subtype][toplvl][k] = v end
       end
     elseif string.match(line, "^%S.*$") then
     -- Top lvl directives
-      if string.match(line, "^Client.*$") then
-        subtype = "clients"
-      elseif string.match(line, "^Source.*$") then
-        subtype = "sources"
-      elseif string.match(line, "^Sink.*$") then
-        subtype = "sinks"
-      else
-        subtype = "unsorted"
-      end
-      toplvl = line
+      subtype, toplvl = string.match(line, "^([^#]+) #(%d+)$")
+      if result[subtype] == nil then result[subtype] = {} end
       result[subtype][toplvl] = {}
     elseif string.match(line, "^%s .*$") then
       result[subtype][toplvl][scndlvl] = result[subtype][toplvl][scndlvl]..line
@@ -67,7 +78,6 @@ local function parse_pactl_list(on_done)
   end
   awful.spawn.with_line_callback("bash -c 'LANG= pactl list'",
                                  {stdout = cb, output_done = donecb})
-  return result
 end
 
 function AudioWidget:update_volume()
@@ -76,12 +86,14 @@ end
 
 function AudioWidget:change_volume(value)
   local cb = function() self:update_volume() end
-  awful.spawn.easy_async("pactl set-sink-volume "..self.master.." "..value, cb)
+  awful.spawn.easy_async("pactl set-sink-volume "..self.master_sink..
+                         " "..value, cb)
 end
 
 function AudioWidget:toggle_mute()
   local cb = function() self:update_volume() end
-  awful.spawn.easy_async("pactl set-sink-mute "..self.master.." toggle", cb)
+  awful.spawn.easy_async("pactl set-sink-mute "..self.master_sink..
+                         " toggle", cb)
 end
 
 function AudioWidget:displayState(message, state)
@@ -93,18 +105,17 @@ end
 function AudioWidget:new()
   local av = AudioWidget
   av.widget = widget.textbox()
-  av.master = "@DEFAULT_SINK@"
+  av.master_sink = "@DEFAULT_SINK@"
+  av.master_source = "@DEFAULT_SOURCE@"
   av.msgid = nil
-  av.volume_callback = function(result)
-    for sname, sink in pairs(result["sinks"]) do
-      local vol = parse_volume(sink["Volume"])
-      local mute = sink["Mute"]
-      local _,_,bal = string.find(sink["Volume"], "balance (%d+%.%d+)")
-      if mute == "yes" then av:displayState("Звук", "[off]")
-      elseif bal == "0.00" then av:displayState("Громкость", tostring(vol[1]))
-      else
-        av:displayState("Громкость", tostring(vol[1]).."|"..tostring(vol[2]))
-      end
+  av.volume_callback = function(pactl_list)
+    local mastersink = pactl_list.Sink[av.master_sink]
+    local vol = parse_volume(mastersink.Volume)
+    local mute = mastersink.Mute
+    local _,_,bal = string.find(mastersink.Volume, "balance (%d+%.%d+)")
+    if mute == "yes" then av:displayState("Звук", "[off]")
+    elseif bal == "0.00" then av:displayState("Громкость", tostring(vol[1]))
+    else av:displayState("Громкость", tostring(vol[1]).."|"..tostring(vol[2]))
     end
   end
   local buts = {
@@ -114,7 +125,14 @@ function AudioWidget:new()
     awful.button({}, 5, function() av:change_volume("-3%") end),
   }
   av.widget:buttons(awful.util.table.join(unpack(buts)))
-  av:update_volume()
+  parse_pactl_list(function(pactl_list)
+    local default_setter = function(sink, source)
+      av.master_sink = sink
+      av.master_source = source
+      av.volume_callback(pactl_list)
+    end
+    get_default_sink_source(pactl_list, default_setter)
+  end)
   return av
 end
 
