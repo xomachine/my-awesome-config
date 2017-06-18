@@ -113,7 +113,7 @@ function AudioWidget:new()
     local vol = parse_volume(mastersink.Volume)
     local mute = mastersink.Mute
     local _,_,bal = string.find(mastersink.Volume, "balance (%d+%.%d+)")
-    if mute == "yes" then av:displayState("Звук", "[off]")
+    if mute == "yes" then av:displayState("Звук", "off")
     elseif bal == "0.00" then av:displayState("Громкость", tostring(vol[1]))
     else av:displayState("Громкость", tostring(vol[1]).."|"..tostring(vol[2]))
     end
