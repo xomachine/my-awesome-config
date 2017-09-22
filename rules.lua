@@ -37,6 +37,12 @@ awful.rules.rules = {
 
         name = {
           "Event Tester",  -- xev.
+          "AT Deck",
+          "AT Scores",
+          "AT Score",
+          "AT Mechanics",
+          "Arena Tracker",
+          "arena-tracker"
         },
         role = {
           "AlarmWindow",  -- Thunderbird's calendar.
