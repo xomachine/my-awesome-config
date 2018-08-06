@@ -1,4 +1,5 @@
 local awful = require("awful")
+local gears = require("gears")
 local notify = require("naughty").notify
 local widget = require("wibox.widget")
 
@@ -135,17 +136,17 @@ function AudioWidget:new()
   end)
   return av
 end
-
-return function(screen)
-  local awidget = AudioWidget:new()
-  local bindings = {
-    awful.key({}, "XF86AudioMute", function() awidget:toggle_mute() end),
-    awful.key({}, "XF86AudioRaiseVolume",
-              function() av:change_volume("+3%") end),
-    awful.key({}, "XF86AudioLowerVolume",
-              function() av:change_volume("-3%") end),
-  }
-  root.keys(awful.util.table.join(root.keys(), unpack(bindings)))
-  return awidget
-end
+local aw = AudioWidget:new()
+return {
+  factory = function(screen)
+    return aw
+  end,
+  bindings = gears.table.join(
+      awful.key({}, "XF86AudioMute", function() aw:toggle_mute() end),
+      awful.key({}, "XF86AudioRaiseVolume",
+                function() aw:change_volume("+3%") end),
+      awful.key({}, "XF86AudioLowerVolume",
+                function() aw:change_volume("-3%") end)
+  )
+}
 

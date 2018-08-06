@@ -4,7 +4,7 @@ local gears = require("gears")
 --local notify = require("naughty").notify
  -- Keyboard map indicator and changer
 
-local new = function(key1, key2)
+local new = function()
 	-- Keyboard map indicator and changer
 	local kbdcfg = {}
 	kbdcfg.clients = {} -- memory of layout for each window
@@ -53,33 +53,31 @@ local new = function(key1, key2)
 	kbdcfg.widget:buttons(
 	  awful.util.table.join(awful.button({ }, 1, function () kbdcfg.switch() end))
 	  )
-        -- Set keybind for layout switch
-  root.keys(awful.util.table.join(root.keys(),
-    awful.key({key1, }, key2, function()
-      kbdcfg.switch()
-      end)))
-  
   -- Keyboard switch to default when using a hotkeys
   kbdcfg.keytimer = gears.timer({timeout = 2})
   kbdcfg.keytimer:connect_signal("timeout", function()
     kbdcfg.frozen_focus = false
     kbdcfg.gotfocus(client.focus)
   end)
-  local mod_pressed = function()
-    kbdcfg.set(kbdcfg.default)
-    kbdcfg.frozen_focus = true
-    awful.keygrabber.stop()
-    kbdcfg.keytimer:again()
-  end
-  local mkey = awful.key({}, "Super_L", mod_pressed)
-  local ckey = awful.key({}, "Control_L", mod_pressed)
-  root.keys(awful.util.table.join(root.keys(),
-   mkey,ckey))
   key.connect_signal("press", function(a, b, c) if kbdcfg.frozen_focus then kbdcfg.keytimer:again() end end)
-
   return kbdcfg
 end
-return function (screen)
-  screen.kbd_switch = new("Shift", "Control_L")
-  return screen.kbd_switch.widget
+local kbdcfg = new()
+local mod_pressed = function()
+  kbdcfg.set(kbdcfg.default)
+  kbdcfg.frozen_focus = true
+  awful.keygrabber.stop()
+  kbdcfg.keytimer:again()
 end
+local binds = gears.table.join(
+  awful.key({"Shift", }, "Control_L", function() kbdcfg.switch() end),
+  awful.key({}, "Super_L", mod_pressed),
+  awful.key({}, "Control_L", mod_pressed)
+)
+return {
+  factory = function (screen)
+    screen.kbd_switch = kbdcfg
+    return screen.kbd_switch.widget
+  end,
+  bindings = binds,
+}

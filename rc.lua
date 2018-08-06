@@ -90,12 +90,27 @@ end
 -- }}}
 
 -- User defined customizations {{{
-require("wallpaper")
-require("autostart")
-require("standart_bindings")
-require("keybinds")
-require("rules")
-require("panel")
+-- Each customization should return all the global keybinds it modifies
+local customs = {
+  "wallpaper",
+  "autostart",
+  "standart_bindings",
+  "keybinds",
+  "rules",
+  "panel",
+}
+local globalbinds = root.keys()
+for i, v in pairs(customs) do
+  local binds = require(v)
+  print(v..": "..tostring(binds))
+  if type(binds) == "table" then
+    print(v..": "..tostring(#binds))
+    globalbinds = awful.util.table.join(globalbinds, binds)
+    -- add binds to global
+  end
+end
+print("Summary binds: "..tostring(#globalbinds))
+root.keys(globalbinds)
 
 --}}}
 
