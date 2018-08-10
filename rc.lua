@@ -38,7 +38,9 @@ end
 
 -- {{{ Variable definitions
 -- Themes define colours, icons, font and wallpapers.
-beautiful.init(awful.util.get_themes_dir() .. "default/theme.lua")
+local theme = loadfile(awful.util.get_themes_dir() .. "bamboo/theme.lua")()
+theme.font = "Square pixel7 8"
+beautiful.init(theme)
 
 local general = require("general")
 -- This is used later as the default terminal and editor to run.
