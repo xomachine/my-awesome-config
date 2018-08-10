@@ -103,8 +103,8 @@ function AudioWidget:displayState(message, state)
   self.widget:set_text("["..state.."]")
 end
 
-function AudioWidget:new()
-  local av = AudioWidget
+function AudioWidget.new()
+  local av = {}
   av.widget = widget.textbox()
   av.master_sink = "@DEFAULT_SINK@"
   av.master_source = "@DEFAULT_SOURCE@"
@@ -134,11 +134,11 @@ function AudioWidget:new()
     end
     get_default_sink_source(pactl_list, default_setter)
   end)
-  return av
+  return setmetatable(av, {__index=AudioWidget})
 end
-local aw = AudioWidget:new()
 return {
   factory = function(screen)
+    local aw = AudioWidget.new()
     return aw
   end,
   bindings = gears.table.join(
