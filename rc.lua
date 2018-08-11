@@ -104,14 +104,12 @@ local customs = {
 local globalbinds = root.keys()
 for i, v in pairs(customs) do
   local binds = require(v)
-  print(v..": "..tostring(binds))
   if type(binds) == "table" then
-    print(v..": "..tostring(#binds))
     globalbinds = awful.util.table.join(globalbinds, binds)
     -- add binds to global
   end
 end
-print("Summary binds: "..tostring(#globalbinds))
+--print("Summary binds: "..tostring(#globalbinds))
 root.keys(globalbinds)
 
 --}}}

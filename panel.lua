@@ -24,13 +24,11 @@ local plugins = {}
 for i, v in pairs(external_plugin_names) do
   local ok, plugin = pcall(function() return require("widgets."..v) end)
   if ok then
-    print(v..": "..tostring(plugin))
     if type(plugin) == "function" then plugins[v] = plugin
     else
       if plugin.bindings then
         global_binds = awful.util.table.join(global_binds, plugin.bindings)
       end
-      print(v..": "..tostring(plugin.factory))
       if plugin.factory then plugins[v] = plugin.factory end
     end
   else
@@ -38,12 +36,11 @@ for i, v in pairs(external_plugin_names) do
     dbg.print_warning(tostring(plugin))
   end
 end
-print("After load: "..tostring(#global_binds))
+--print("After load: "..tostring(#global_binds))
 
 local function make_panel_for_screen(screen)
   local safeload = function(name) 
     local ok, obj = pcall(function()
-      print(tostring(name))
       return plugins[name](screen)
     end)
     if ok then
