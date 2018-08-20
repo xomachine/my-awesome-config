@@ -12,7 +12,7 @@ local myawesomemenu = {
    { "Горячие клавиши", function() return false, hotkeys_popup.show_help end},
    { "Помощь", general.terminal .. " -e man awesome" },
    { "Конфигурация", general.editor_cmd .. " " .. awesome.conffile  },
-   { "Проверка", general.terminal .. " -e bash -c 'Xephyr :1 & sleep 1s; DISPLAY=:1 awesome;'"},
+   { "Проверка", general.terminal .. " -e \"bash -c 'Xephyr :1 2>/dev/null & sleep 1s; DISPLAY=:1 awesome;'\""},
    { "Перезапуск", awesome.restart },
    { "Выйти", function() awesome.quit() end}
 }
