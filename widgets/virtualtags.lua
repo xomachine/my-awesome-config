@@ -79,8 +79,14 @@ function Tag:detach(c)
   --print("Detaching "..tostring(c).." from tag "..self.name)
   self.clients[c.window] = nil
   local exist = false
+  for i, v in pairs(self.clients) do
+    if not self.hidden then
+      v:jump_to(true)
+    end
+    exist = true
+    break
+  end
   if not exist then self.notifier.clients(false) end
-  if not self.hidden then for i, v in pairs(self.clients) do v:jump_to(true) break end end
 end
 
 local TagManager = {}
