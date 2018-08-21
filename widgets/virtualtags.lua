@@ -5,14 +5,15 @@ local modkey = require("general").modkey
 
 local originalscreen = screen.primary
 local orig_geom = originalscreen.geometry
-awful.tag.new({"visible"}, screen[1], awful.layout.layouts[1])
+local originaltag = awful.tag.add("visible", {screen = screen[1], layout = awful.layout.layouts[1]})
+awful.client.focus.history.disable_tracking()
 local function makefakescreen()
   local hs = screen.fake_add(0, orig_geom.height, orig_geom.width, orig_geom.height)
-  awful.tag.new({"invisible"}, hs, awful.layout.suit.floating)
+  local ht = awful.tag.add("invisible", {screen = hs, layout = awful.layout.suit.floating})
   --print("Created: "..tostring(hs))
-  return hs
+  return hs, ht
 end
-local hiddenscreen = makefakescreen()
+local hiddenscreen, hiddentag = makefakescreen()
 local hiddenaddr = tostring(hiddenscreen)
 local hiddenindex = hiddenscreen.index
 screen.connect_signal("removed", function(s)
@@ -34,18 +35,26 @@ end
 function Tag:hide()
   --print("Screen count: "..tostring(screen:count()))
   for i, v in pairs(self.clients) do
-    v:move_to_screen(hiddenindex)
+    --print("Hidding: "..tostring(v))
+    --v:move_to_screen(hiddenindex)
+    v:move_to_tag(hiddentag)
   end
   self.hidden = true
   self.notifier.active(true)
+  originaltag:view_only()
 end
 
 function Tag:show()
   for i, v in pairs(self.clients) do
-    v:move_to_screen(originalscreen.index)
+    --print("Showing: "..tostring(v))
+    --v:move_to_screen(originalscreen.index)
+    v:move_to_tag(originaltag)
   end
+  --awful.screen.focus(originalscreen.index)
+  --if firstclient then firstclient:jump_to(true) end
   self.hidden = false
   self.notifier.active(false)
+  originaltag:view_only()
 end
 
 function Tag:toggle()
@@ -55,21 +64,23 @@ end
 function Tag:attach(c)
   --print("Attaching "..tostring(c).." to tag "..self.name)
   if not hiddenaddr then
-    hiddenscreen = makefakescreen()
+    hiddenscreen, hiddentag = makefakescreen()
     hiddenaddr = tostring(hiddenscreen)
     hiddenindex = hiddenscreen.index
     --print("Created screen with index "..tostring(hiddenindex))
   end
   self.clients[c.window] = c
   self.notifier.clients(true)
+  --if not self.hidden then c:move_to_screen(originalscreen.index) end
+  if not self.hidden then c:move_to_tag(originaltag) end
 end
 
 function Tag:detach(c)
   --print("Detaching "..tostring(c).." from tag "..self.name)
   self.clients[c.window] = nil
   local exist = false
-  for _ in pairs(self.clients) do exist = true break end
   if not exist then self.notifier.clients(false) end
+  if not self.hidden then for i, v in pairs(self.clients) do v:jump_to(true) break end end
 end
 
 local TagManager = {}
@@ -184,10 +195,12 @@ function TagManager.new(tagnames)
 end
 
 function TagManager:view_only(tagname)
-  self.selectedtag = tagname
+  if self.selectedtag == tagname then return end
   for i, v in pairs(self.taglist) do
-    if i == tagname then v:show() else v:hide() end
+    if i ~= tagname then v:hide() end
   end
+  self.taglist[tagname]:show()
+  self.selectedtag = tagname
 end
 
 function TagManager:move_to_tag(c, tagname)
@@ -207,12 +220,6 @@ function TagManager:move_to_tag(c, tagname)
 end
 
 local tagman = TagManager.new({"1", "2", "3", "4", "5", "6", "7", "8", "9"})
---print(awful.wibar.bg)
---local beautiful = require("beautiful")
---for k, v in pairs(beautiful) do
---  print(tostring(k)..": "..tostring(v))
---
---end
 return {
   factory = function(screen)
     return tagman.widget
