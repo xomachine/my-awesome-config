@@ -189,16 +189,19 @@ function TagManager.new(tagnames)
 end
 
 function TagManager:view_only(tagname)
+  local coords = mouse.coords()
   for i, v in pairs(self.taglist) do
     if i ~= tagname then v:hide() end
   end
   self.taglist[tagname]:show()
+  mouse.coords(coords)
   self.selectedtag = tagname
 end
 
 function TagManager:move_to_tag(c, tagname)
   if not self.taglist[tagname] then error("Tag "..tostring(tagname).." does not exists!") end
   --if self.selectedtag ~= tagname then self.taglist[tagname]:hide() end
+  local coords = mouse.coords()
   if self.selectedtag ~= tagname then c:move_to_screen(hiddenscreen) end
   if type(c.virtualtags) == "table" then
     -- remove the c from all the tags in the table
@@ -210,6 +213,7 @@ function TagManager:move_to_tag(c, tagname)
   end
   c.virtualtags = {tagname}
   self.taglist[tagname]:attach(c)
+  mouse.coords(coords)
   --print("Client moved to tag "..tagname)
 end
 
