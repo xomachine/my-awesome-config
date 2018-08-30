@@ -24,14 +24,17 @@ function Tag.new(name, notifier)
     clients = {},
     hidden = true,
     notifier = notifier or {active = function(a) end, clients = function (a) end},
-    name = name
+    name = name,
+    lastfocus = false
   }
   return setmetatable(faketable, { __index = Tag })
 end
 
 function Tag:hide()
   --print("Screen count: "..tostring(screen:count()))
+  local focus = (not self.hidden) and client.focus
   for i, v in pairs(self.clients) do
+    if focus and focus.window == i then self.lastfocus = focus end
     v:move_to_screen(hiddenindex)
   end
   self.hidden = true
@@ -39,10 +42,12 @@ function Tag:hide()
 end
 
 function Tag:show()
+  local first = self.lastfocus
   for i, v in pairs(self.clients) do
+    if not first then first = v end
     v:move_to_screen(originalscreen.index)
   end
-  for _, v in pairs(self.clients) do v:jump_to() break end
+  if first then first:jump_to() end
   self.hidden = false
   self.notifier.active(false)
 end
@@ -74,7 +79,10 @@ function Tag:detach(c)
     exist = true
     break
   end
-  if not exist then self.notifier.clients(false) end
+  if not exist then
+    self.notifier.clients(false)
+    self.lastfocus = false
+  end
 end
 
 local TagManager = {}
