@@ -66,10 +66,14 @@ function Tag:attach(c)
   end
   self.clients[c.window] = c
   self.notifier.clients(true)
+  if not self.lastfocus then self.lastfocus = c end
 end
 
 function Tag:detach(c)
   --print("Detaching "..tostring(c).." from tag "..self.name)
+  if self.lastfocus and self.lastfocus.window == c.window then
+    self.lastfocus = false
+  end
   self.clients[c.window] = nil
   local exist = false
   for i, v in pairs(self.clients) do
