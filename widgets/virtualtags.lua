@@ -77,11 +77,12 @@ function Tag:detach(c)
   self.clients[c.window] = nil
   local exist = false
   for i, v in pairs(self.clients) do
-    if not self.hidden then
-      v:jump_to()
-    end
     exist = true
-    break
+    if self.hidden then break end
+    if v:isvisible() then
+      v:jump_to()
+      break
+    end
   end
   if not exist then
     self.notifier.clients(false)
