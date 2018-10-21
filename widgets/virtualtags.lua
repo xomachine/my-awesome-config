@@ -35,7 +35,9 @@ function Tag:hide()
   local focus = (not self.hidden) and client.focus
   for i, v in pairs(self.clients) do
     if focus and focus.window == i then self.lastfocus = focus end
-    v:move_to_screen(hiddenindex)
+    if not v.sticky then
+      v:move_to_screen(hiddenindex)
+    end
   end
   self.hidden = true
   self.notifier.active(true)
