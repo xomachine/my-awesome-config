@@ -23,6 +23,7 @@ local favoritesmenu = {
    { "Файлы", general.filemanager }
 }
 local systemmenu = {
+   { "Переключение видеокарты", "sh ~/.Soft/nvidia_switch.sh" },
    { "Перезагрузка", "reboot" },
    { "Выключение", "shutdown -h now" },
 }

@@ -11,12 +11,13 @@ local global_binds = {}
 
 local external_plugin_names = {
   "launcher",
-  "taglist",
   "prompt",
   "tasklist",
   "kbd_switch",
   "audio",
   "layoutbox",
+  "taglist",
+--  "virtualtags",
 }
 
 local plugins = {}
@@ -39,7 +40,7 @@ end
 --print("After load: "..tostring(#global_binds))
 
 local function make_panel_for_screen(screen)
-  local safeload = function(name) 
+  local safeload = function(name)
     local ok, obj = pcall(function()
       return plugins[name](screen)
     end)
@@ -60,6 +61,7 @@ local function make_panel_for_screen(screen)
           layout = wibox.layout.fixed.horizontal,
           safeload("launcher"),
           safeload("taglist"),
+          safeload("virtualtags"),
           safeload("prompt"),
       },
       safeload("tasklist"), -- Middle widget

@@ -99,6 +99,7 @@ function TagManager.new(tagnames)
   local faketable = {
     taglist = {},
     selectedtag = nil,
+    selectedidx = nil,
   }
   local buttons = {}
   local self = setmetatable(faketable, { __index = TagManager })
@@ -164,7 +165,7 @@ function TagManager.new(tagnames)
     }
     tagwidget.tag = Tag.new(v, guinotifier)
     tagwidget.id = v
-    self.taglist[v] = tagwidget.tag
+    self.taglist[i] = tagwidget.tag
     local keybinds = awful.util.table.join(
       awful.button({ }, 1, function(t) self:view_only(t.widget.id) end),
       awful.button({ modkey }, 1, function(t)
@@ -186,6 +187,26 @@ function TagManager.new(tagnames)
     tagwidget:buttons(keybinds)
     table.insert(buttons, tagwidget)
   end
+  globalbinds = awful.util.table.join(globalbinds,
+      awful.key({ modkey, "Control" }, "Right",
+                function ()
+                  local newidx = self.selectedidx + 1
+                  if newidx > #self.taglist then
+                    newidx = newidx - #self.taglist
+                  end
+                  self:view_only(self.taglist[newidx].name)
+                end,
+                {description = "show tag right to current"}),
+      awful.key({ modkey, "Control" }, "Left",
+                function ()
+                  local newidx = self.selectedidx - 1
+                  if newidx < 1 then
+                    newidx = newidx + #self.taglist
+                  end
+                  self:view_only(self.taglist[newidx].name)
+                end,
+                {description = "show tag left to current"})
+              )
   client.connect_signal("manage", function(c)
     --print("Client ".. tostring(c).." is attached to the tag "..tostring(self.selectedtag))
     if self.selectedtag then self:move_to_tag(c, self.selectedtag) end
@@ -205,16 +226,18 @@ end
 
 function TagManager:view_only(tagname)
   local coords = mouse.coords()
+  local idx = 0
   for i, v in pairs(self.taglist) do
-    if i ~= tagname then v:hide() end
+    if v.name ~= tagname then v:hide()
+    else idx = i end
   end
-  self.taglist[tagname]:show()
+  self.taglist[idx]:show()
   mouse.coords(coords)
   self.selectedtag = tagname
+  self.selectedidx = idx
 end
 
 function TagManager:move_to_tag(c, tagname)
-  if not self.taglist[tagname] then error("Tag "..tostring(tagname).." does not exists!") end
   --if self.selectedtag ~= tagname then self.taglist[tagname]:hide() end
   local coords = mouse.coords()
   if self.selectedtag ~= tagname then c:move_to_screen(hiddenscreen) end
@@ -226,8 +249,13 @@ function TagManager:move_to_tag(c, tagname)
       end
     end
   end
-  c.virtualtags = {tagname}
-  self.taglist[tagname]:attach(c)
+  for i, v in pairs(self.taglist) then
+    if v.name == tagname then
+      c.virtualtags = {i}
+      v:attach(c)
+      break
+    end
+  end
   mouse.coords(coords)
   --print("Client moved to tag "..tagname)
 end
