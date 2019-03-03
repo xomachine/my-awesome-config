@@ -10,7 +10,7 @@ local bindings = {
     {{}, "XF86Launch3", "loimpress", },
     --{{}, "XF86Search", os.getenv("FILEMANAGER") or "pcmanfm-qt", },
     {{}, "XF86Mail", general.filemanager, },
-    {{general.modkey, "Shift"}, "z", "sh ~/.Soft/switch_input.sh", [5]="Switch input to another screen" },
+    {{general.modkey, "Shift"}, "z", "sh '"..os.getenv("HOME").."/.Soft/switch_input.sh'", [5]="Switch input to another screen" },
     {{}, "Print", "bash -c 'import -window root -frame png:- "..os.getenv("HOME").."/Pictures/$(date +%y-%m-%d_%T).png'", [5] = "Make a screenshot"},
   }
 local prepared = {}
