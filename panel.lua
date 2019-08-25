@@ -13,7 +13,7 @@ local external_plugin_names = {
   "launcher",
   "prompt",
   "tasklist",
-  "kbd_switch",
+--  "kbd_switch",
   "audio",
   "layoutbox",
   "taglist",
@@ -38,6 +38,12 @@ for i, v in pairs(external_plugin_names) do
   end
 end
 --print("After load: "..tostring(#global_binds))
+local function textclock_with_calendar()
+  local mytextclock = wibox.widget.textclock()
+  local month_calendar = awful.widget.calendar_popup.month()
+  month_calendar:attach( mytextclock, "tr" )
+  return mytextclock
+end
 
 local function make_panel_for_screen(screen)
   local safeload = function(name)
@@ -68,10 +74,11 @@ local function make_panel_for_screen(screen)
       { -- Right widgets
           layout = wibox.layout.fixed.horizontal,
           wibox.widget.systray(),
-          safeload("kbd_switch"),
-          --awful.widget.keyboardlayout(),
+          --safeload("kbd_switch"),
+          awful.widget.keyboardlayout(),
           safeload("audio"),
-          wibox.widget.textclock(),
+          --wibox.widget.textclock(),
+          textclock_with_calendar(),
           safeload("layoutbox")
       },
   }
