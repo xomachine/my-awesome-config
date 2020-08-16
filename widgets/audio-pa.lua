@@ -2,6 +2,7 @@ local awful = require("awful")
 local gears = require("gears")
 local notify = require("naughty").notify
 local widget = require("wibox.widget")
+local unpack = unpack or table.unpack
 
 local AudioWidget = {}
 
