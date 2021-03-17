@@ -12,7 +12,7 @@ local bindings = {
     {{}, "XF86Mail", general.filemanager, },
     {{general.modkey, "Shift"}, "z", "sh '"..os.getenv("HOME").."/.Soft/switch_input.sh'", [5]="Switch input to another screen" },
     {{}, "Print", "bash -c 'import -window root -frame png:- "..os.getenv("HOME").."/Pictures/$(date +%y-%m-%d_%T).png'", [5] = "Make a screenshot"},
-    {{"Shift"}, "Print", "bash -c 'import -frame png:- "..os.getenv("HOME").."/Pictures/$(date +%y-%m-%d_%T).png'", [5] = "Make a screenshot area"},
+    {{"Shift"}, "Print", "bash -c 'import -frame "..os.getenv("HOME").."/Pictures/$(date +%y-%m-%d_%T).png'", [5] = "Make a screenshot area"},
   }
 local prepared = {}
 for k, v in ipairs(bindings)
